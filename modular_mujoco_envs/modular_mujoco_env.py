@@ -54,7 +54,8 @@ class ModularMujocoEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         
         # parameters that control the reward function
         self.control_penalty = control_penalty
-        self.alive_bonus = alive_bonus 
+        self.alive_bonus = alive_bonus
+        self.xml = xml
 
         # constants that control what is observed by the agent
         self.include_joint_range_in_obs = include_joint_range_in_obs
