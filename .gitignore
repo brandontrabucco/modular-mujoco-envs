@@ -1,0 +1,8 @@
+*.egg-info**
+*.idea**
+*.out**
+*.pkl**
+*.txt**
+*.csv**
+*.npy**
+*.pyc**

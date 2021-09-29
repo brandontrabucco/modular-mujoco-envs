@@ -1,7 +1,7 @@
 <mujoco model="humanoid">
-    <include file="../../misc/skybox.xml" />
-    <include file="../../misc/visual.xml" />
-    <include file="../../misc/materials.xml" />
+    <include file="../misc/skybox.xml" />
+    <include file="../misc/visual.xml" />
+    <include file="../misc/materials.xml" />
     <compiler angle="degree" inertiafromgeom="true"/>
     <default>
         <joint armature="1" damping="1" limited="true"/>
@@ -74,4 +74,3 @@
         <motor gear="12.5" joint="right_elbow" name="right_elbow"/>
     </actuator>
 </mujoco>
-

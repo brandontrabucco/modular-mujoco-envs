@@ -11,6 +11,7 @@ def get_xml_path(variant):
         os.path.realpath(__file__)), "xmls/" + variant)
 
 
+# register a gym environment for every half cheetah variant
 for env_variant in [
         "cheetah_2_back.xml",
         "cheetah_2_front.xml",
@@ -28,6 +29,7 @@ for env_variant in [
         "cheetah_6_front.xml",
         "cheetah_7_full.xml"]:
 
+    # register the environment with a pretty name
     gym.envs.register(
         id="ModularHalfCheetah{0}Env-v0".format(pretty(env_variant[8:-4])),
         entry_point="modular_mujoco_envs" + 
@@ -36,6 +38,7 @@ for env_variant in [
         kwargs=dict(xml=get_xml_path(env_variant)))
 
 
+# register a gym environment for every walker variant
 for env_variant in [
         "walker_2_flipped.xml",
         "walker_2_main.xml",
@@ -50,6 +53,7 @@ for env_variant in [
         "walker_7_flipped.xml",
         "walker_7_main.xml"]:
 
+    # note that each walker has a different height
     height_threshold = {
         "walker_2_flipped.xml": 0.26,
         "walker_2_main.xml": 0.26,
@@ -64,6 +68,7 @@ for env_variant in [
         "walker_7_flipped.xml": 0,
         "walker_7_main.xml": 0}
 
+    # register the environment with a pretty name
     gym.envs.register(
         id="ModularWalker2d{0}Env-v0".format(pretty(env_variant[7:-4])),
         entry_point="modular_mujoco_envs" + 
@@ -73,16 +78,19 @@ for env_variant in [
                     height_threshold=height_threshold[env_variant]))
 
 
+# register a gym environment for every hopper variant
 for env_variant in [
         "hopper_3.xml",
         "hopper_4.xml",
         "hopper_5.xml"]:
 
+    # note that each hopper has a different height
     height_threshold = {
         "hopper_3.xml": 0.45,
         "hopper_4.xml": 0.6,
         "hopper_5.xml": 0.95}
 
+    # register the environment with a pretty name
     gym.envs.register(
         id="ModularHopper{0}Env-v0".format(pretty(env_variant[7:-4])),
         entry_point="modular_mujoco_envs" + 
@@ -92,6 +100,7 @@ for env_variant in [
                     height_threshold=height_threshold[env_variant]))
 
 
+# register a gym environment for every humanoid variant
 for env_variant in [
         "humanoid_2d_7_left_arm.xml",
         "humanoid_2d_7_left_leg.xml",
@@ -102,6 +111,7 @@ for env_variant in [
         "humanoid_2d_8_right_knee.xml",
         "humanoid_2d_9_full.xml"]:
 
+    # register the environment with a pretty name
     gym.envs.register(
         id="ModularHumanoid2d{0}Env-v0".format(pretty(env_variant[12:-4])),
         entry_point="modular_mujoco_envs" + 

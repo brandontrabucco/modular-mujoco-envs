@@ -51,10 +51,8 @@ class ModularMujocoEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             includes a normalized description of the body velocity.
 
         """
-
-        # launch the mujoco simulator with the given xml
-        mujoco_env.MujocoEnv.__init__(self, xml, 4)
-        utils.EzPickle.__init__(self)
+        
+        # parameters that control the reward function
         self.control_penalty = control_penalty
         self.alive_bonus = alive_bonus 
 
@@ -64,6 +62,10 @@ class ModularMujocoEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.include_orientation_in_obs = include_orientation_in_obs
         self.include_position_vel_in_obs = include_position_vel_in_obs
         self.include_orientation_vel_in_obs = include_orientation_vel_in_obs
+
+        # launch the mujoco simulator with the given xml
+        mujoco_env.MujocoEnv.__init__(self, xml, 4)
+        utils.EzPickle.__init__(self)
 
     def reset_model(self):
         """Resets the environment to a random orientation defined by the 
@@ -160,7 +162,7 @@ class ModularMujocoEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         body: str
             the name of the body to generate an observation vector, such 
-            as the "bthigh" in nthe case of the half cheetah.
+            as the "bthigh" in the case of the half cheetah.
 
         Returns:
 

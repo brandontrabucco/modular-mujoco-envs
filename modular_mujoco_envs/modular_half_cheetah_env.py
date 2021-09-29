@@ -50,7 +50,7 @@ class ModularHalfCheetahEnv(ModularMujocoEnv):
         """
 
         # build the superclass using modified default arguments
-        super(ModularMujocoEnv, self).__init__(
+        super(ModularHalfCheetahEnv, self).__init__(
             xml, control_penalty=control_penalty, alive_bonus=alive_bonus,
             include_joint_range_in_obs=include_joint_range_in_obs,
             include_position_in_obs=include_position_in_obs, 
