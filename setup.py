@@ -8,18 +8,16 @@ with open(F, 'r') as readme:
 
 
 setup(
-    name='modular-mujoco-envs',
-    version='0.1',
-    license='MIT',
-    packages=find_packages(include=[
-        'modular_mujoco_envs', 
-        'modular_mujoco_envs.*']),
+    name='modular-mujoco-envs', version='1.0', license='MIT',
+    packages=find_packages(include=['modular_mujoco_envs', 
+                                    'modular_mujoco_envs.*']),
     description='Modular MuJoCo Environments',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
-    author='Brandon Trabucco',
-    author_email='brandon@btrabucco.com',
+    author='Brandon Trabucco', author_email='brandon@btrabucco.com',
     url='https://github.com/brandontrabucco/modular-mujoco-envs',
+    download_url='https://github.com/brandontrabucco'
+                 '/modular-mujoco-envs/archive/v1_0.tar.gz',
     keywords=['Deep Learning', 'Deep Reinforcement Learning'],
     classifiers=[
         'Programming Language :: Python :: 3.5',
