@@ -179,19 +179,23 @@ class ModularMujocoEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             jnt_qposadr += 2
 
         # determine the angle and angular velocity of this joint
-        bounds = np.degrees(self.sim.model.jnt_range[jnt_adr]) 
+        bound = np.degrees(self.sim.model.jnt_range[jnt_adr]) 
         angle = np.degrees(self.data.qpos[jnt_qposadr])
         velocity = np.degrees(self.data.qvel[jnt_qposadr])
 
+        # handle when the joint angle is not bounded
+        default_bound = np.array([-180.0, 180.0])
+        bound = np.where(np.equal(bound[:1], bound[1:]), 
+                         default_bound, bound)
+
         # normalize and return an observation for each body
-        denom = bounds[1] - bounds[0]
-        denom = np.where(np.equal(denom, 0), np.ones_like(denom), denom)
-        observations = [[(angle - bounds[0]) / denom, 
-                         (velocity - bounds[0]) / denom]]
+        denom = bound[1] - bound[0]
+        observations = [[(angle - bound[0]) / denom, 
+                         (velocity - bound[0]) / denom]]
 
         # whether to observe the joint actuation range for each body
         if self.include_joint_range_in_obs:
-            observations.append((180.0 + bounds) / 360.0)
+            observations.append((180.0 + bound) / 360.0)
 
         # whether to observe the xyz position for each body
         if self.include_position_in_obs:

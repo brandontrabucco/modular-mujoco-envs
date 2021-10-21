@@ -25,18 +25,11 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 3.7']
 
 
-PACKAGE_DATA = []
-for file in glob.glob(os.path.join(os.path.dirname(
-        os.path.realpath(__file__)), "modular_mujoco_envs/xmls/*.xml")):
-    PACKAGE_DATA.append("xmls/" + os.path.basename(file))
-
-
 setup(
-    name='modular-mujoco-envs', version='1.2', license='MIT',
+    name='modular-mujoco-envs', version='1.3', license='MIT',
     packages=find_packages(include=['modular_mujoco_envs', 
                                     'modular_mujoco_envs.*']),
     include_package_data=True,
-    package_data={'modular_mujoco_envs': PACKAGE_DATA},
     description='Modular MuJoCo Environments',
     long_description=LONG_DESCRIPTION, classifiers=CLASSIFIERS,
     long_description_content_type='text/markdown',
@@ -44,4 +37,4 @@ setup(
     author='Brandon Trabucco', author_email='brandon@btrabucco.com',
     url='https://github.com/brandontrabucco/modular-mujoco-envs',
     download_url='https://github.com/brandontrabucco'
-                 '/modular-mujoco-envs/archive/v1_2.tar.gz')
+                 '/modular-mujoco-envs/archive/v1_3.tar.gz')
