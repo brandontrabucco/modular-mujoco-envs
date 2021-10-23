@@ -1,7 +1,5 @@
 from setuptools import find_packages
 from setuptools import setup
-import glob
-import os
 
 
 F = 'README.md'
@@ -26,7 +24,7 @@ CLASSIFIERS = [
 
 
 setup(
-    name='modular-mujoco-envs', version='1.3', license='MIT',
+    name='modular-mujoco-envs', version='1.5', license='MIT',
     packages=find_packages(include=['modular_mujoco_envs', 
                                     'modular_mujoco_envs.*']),
     include_package_data=True,
@@ -37,4 +35,4 @@ setup(
     author='Brandon Trabucco', author_email='brandon@btrabucco.com',
     url='https://github.com/brandontrabucco/modular-mujoco-envs',
     download_url='https://github.com/brandontrabucco'
-                 '/modular-mujoco-envs/archive/v1_3.tar.gz')
+                 '/modular-mujoco-envs/archive/v1_5.tar.gz')

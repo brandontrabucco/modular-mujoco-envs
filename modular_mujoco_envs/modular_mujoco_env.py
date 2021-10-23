@@ -12,11 +12,12 @@ class ModularMujocoEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     """
 
     def __init__(self, xml, control_penalty=1e-3, alive_bonus=1.0,
-                 include_joint_range_in_obs=True,
+                 time_skip=5, include_joint_range_in_obs=True,
                  include_position_in_obs=True, 
                  include_orientation_in_obs=True,
                  include_position_vel_in_obs=True, 
-                 include_orientation_vel_in_obs=True):
+                 include_orientation_vel_in_obs=True,
+                 one_joint_per_limb=False, hide_root_x_position=True):
         """Instantiates a modular MuJoCo environment using a custom xml 
         file defining the structure of the agent, and provides a clean 
         interface to extracting the agent's morphology.
@@ -32,29 +33,40 @@ class ModularMujocoEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         alive_bonus: float
             encourage the agent to stay alive and avoid falling by adding 
             a positive constant to the reward at every step.
+        time_skip: int
+            the number of time steps to run the mujoco simulator for every
+            step of the outer reinforcement learning environment.
 
-        include_joint_range_in_obs: float
+        include_joint_range_in_obs: bool
             a boolean that specifies whether the observation of the robot
             includes a normalized description of the joint range.
-        include_position_in_obs: float
+        include_position_in_obs: bool
             a boolean that specifies whether the observation of the robot
             includes a normalized description of the body position.
-        include_orientation_in_obs: float
+        include_orientation_in_obs: bool
             a boolean that specifies whether the observation of the robot
             includes a normalized description of the body orientation.
             
-        include_position_vel_in_obs: float
+        include_position_vel_in_obs: bool
             a boolean that specifies whether the observation of the robot
             includes a normalized description of the body velocity.
-        include_orientation_vel_in_obs: float
+        include_orientation_vel_in_obs: bool
             a boolean that specifies whether the observation of the robot
             includes a normalized description of the body velocity.
+
+        one_joint_per_limb: bool
+            a boolean that controls whether each observation per limb 
+            includes only a single joint if multiple are available.
+        hide_root_x_position: bool
+            a boolean that controls whether the root x position of the
+            agent is not included in the observation for the torso.
 
         """
         
         # parameters that control the reward function
         self.control_penalty = control_penalty
         self.alive_bonus = alive_bonus
+        self.time_skip = time_skip
         self.xml = xml
 
         # constants that control what is observed by the agent
@@ -63,9 +75,11 @@ class ModularMujocoEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.include_orientation_in_obs = include_orientation_in_obs
         self.include_position_vel_in_obs = include_position_vel_in_obs
         self.include_orientation_vel_in_obs = include_orientation_vel_in_obs
+        self.one_joint_per_limb = one_joint_per_limb
+        self.hide_root_x_position = hide_root_x_position
 
         # launch the mujoco simulator with the given xml
-        mujoco_env.MujocoEnv.__init__(self, xml, 4)
+        mujoco_env.MujocoEnv.__init__(self, xml, time_skip)
         utils.EzPickle.__init__(self)
 
     def reset_model(self):
@@ -172,30 +186,32 @@ class ModularMujocoEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         """
 
         # determine the address of the agent's joint for this body
-        jnt_adr = self.sim.model.body_jntadr[
-            self.sim.model.body_name2id(body)]
-        jnt_qposadr = self.sim.model.jnt_qposadr[jnt_adr]
-        if body == "torso":
-            jnt_qposadr += 2
+        body_id = self.sim.model.body_name2id(body)
+        jnt_adr = self.sim.model.body_jntadr[body_id]
+        next_jnt_adr = (self.sim.model.body_jntadr[body_id + 1] 
+                        if body_id + 1 < 
+                        self.sim.model.body_jntadr.size else None)
 
-        # determine the angle and angular velocity of this joint
-        bound = np.degrees(self.sim.model.jnt_range[jnt_adr]) 
-        angle = np.degrees(self.data.qpos[jnt_qposadr])
-        velocity = np.degrees(self.data.qvel[jnt_qposadr])
+        # if only one joint per limb is included choose the last
+        jnt_qposadr_list = self.sim.model.jnt_qposadr[jnt_adr:next_jnt_adr]
+        if self.one_joint_per_limb:
+            jnt_qposadr_list = [jnt_qposadr_list[-1]]
 
-        # handle when the joint angle is not bounded
-        default_bound = np.array([-180.0, 180.0])
-        bound = np.where(np.equal(bound[:1], bound[1:]), 
-                         default_bound, bound)
+        observations = []
+        for jnt_qposadr in jnt_qposadr_list:
 
-        # normalize and return an observation for each body
-        denom = bound[1] - bound[0]
-        observations = [[(angle - bound[0]) / denom, 
-                         (velocity - bound[0]) / denom]]
+            # do not include the x position of the agent, only velocity
+            if jnt_qposadr == 0 and self.hide_root_x_position:
+                observations.append([self.data.qvel[jnt_qposadr]])
+
+            # return the qpos and qvel observation for each body
+            else:
+                observations.append([self.data.qpos[jnt_qposadr], 
+                                     self.data.qvel[jnt_qposadr]])
 
         # whether to observe the joint actuation range for each body
         if self.include_joint_range_in_obs:
-            observations.append((180.0 + bound) / 360.0)
+            observations.append(self.sim.model.jnt_range[jnt_adr])
 
         # whether to observe the xyz position for each body
         if self.include_position_in_obs:
